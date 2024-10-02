@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   const { email, password, register_token } = req.body;
-  if (!email || !password || !register_token) {
+  if (!email || !password) {
     throw new BadRequestError("Invalid Request");
   }
 
@@ -19,10 +19,10 @@ const register = async (req, res) => {
   }
 
   try {
-    const payload = jwt.verify(register_token, process.env.REGISTER_SECRET);
-    if (payload.email !== email) {
-      throw new BadRequestError("Invalid Token or expired");
-    }
+    // const payload = jwt.verify(register_token, process.env.REGISTER_SECRET);
+    // if (payload.email !== email) {
+    //   throw new BadRequestError("Invalid Token or expired");
+    // }
 
     const new_user = await User.create({ email: email, password: password });
     const access_token = new_user.createAccessToken();
@@ -32,7 +32,7 @@ const register = async (req, res) => {
       tokens: { access_token: access_token, refresh_token: refresh_token },
     });
   } catch (error) {
-    console.log("@@@",error)
+    console.log("@@@", error)
     throw new BadRequestError("Invalid Body");
   }
 };
